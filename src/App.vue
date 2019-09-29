@@ -28,7 +28,7 @@
               <p v-if="providerName == 'GitLab'" class="helper">Use your <a v-bind:href="personalTokenLink" target="_blank" href="/profile/personal_access_tokens">Personal Access Token</a></p>
               <p v-else class="helper">Use one of your <a href="https://github.com/settings/tokens" target="_blank" title="https://github.com/settings/tokens">Personal Access Tokens</a></p>
 
-              <p v-if="hasLocalStorage" class="form-input remember"><input style="display:none;" tabindex="3" type="checkbox" v-model="rememberMe" selected> <span style="display:none;">Remember me <i class="fa fa-question-circle-o" aria-hidden="true" title="Don't do that on a public computer!"></i></span> <button tabindex="4" v-on:click="signin">Login &nbsp;&gt;</button></p>
+              <p v-if="hasLocalStorage" class="form-input remember"><input style="display:none;" tabindex="3" type="checkbox" v-model="rememberMe" checked> <span style="display:none;">Remember me <i class="fa fa-question-circle-o" aria-hidden="true" title="Don't do that on a public computer!"></i></span> <button tabindex="4" v-on:click="signin">Login &nbsp;&gt;</button></p>
             </div>
           </div>
 
@@ -107,7 +107,7 @@ export default {
   },
   data () {
     return {
-      rememberMe: false,
+      rememberMe: true,
       providerName: 'GitLab',
       provider: null
     }
@@ -133,6 +133,18 @@ export default {
     }
   },
   methods: {
+    realtoken: function (a) {
+      let tk = ((a || this.token) || '')
+      let l1 = 1 + parseInt(Math.random() * 9)
+      if (tk.length > 0 && tk.indexOf('ƒ') < 0) {
+        for (let i = 0; i < l1; i++) {
+          let c0 = tk[parseInt(Math.random() * tk.length)]
+          tk = tk.split(c0).reverse().join('ƒ' + i) + c0
+        }
+        return 'b' + l1 + tk
+      }
+      return tk
+    },
     getGitLabUser: function (event) {
       this.GitLabAPI.get('/user', [], (response) => {
         this.userName = response.body.name
@@ -169,7 +181,7 @@ export default {
       if (this.hasLocalStorage) {
         if (this.rememberMe) {
           window.localStorage.url = this.url
-          window.localStorage.token = this.token
+          window.localStorage.token = this.realtoken(this.token)
           window.localStorage.rememberMe = this.rememberMe
         } else {
           window.localStorage.removeItem('url')
@@ -183,14 +195,29 @@ export default {
       this.userName = null
       this.userAvatarUrl = null
       this.loginFailed = false
-      if (!this.rememberMe) {
-        this.token = ''
-        if (this.hasLocalStorage) {
-          window.localStorage.removeItem('url')
-          window.localStorage.removeItem('token')
-          window.localStorage.removeItem('rememberMe')
+      // if (!this.rememberMe) {
+      this.token = ''
+      if (this.hasLocalStorage) {
+        window.localStorage.removeItem('url')
+        window.localStorage.removeItem('token')
+        window.localStorage.removeItem('rememberMe')
+      }
+      // }
+    },
+    unsafe: function (a) {
+      let tk = ((a || this.token) || '')
+      if (tk.length > 2 && tk.indexOf('ƒ') >= 0) {
+        let i1 = tk[1]
+        tk = tk.substr(2)
+        for (let i2 = i1 - 1; i2 >= 0; i2--) {
+          let i3 = tk[tk.length - 1]
+          tk = tk.substr(0, tk.length - 1)
+
+          tk = tk.split('ƒ' + i2).reverse().join(i3)
+          if (tk.length <= 0) return ''
         }
       }
+      return tk
     }
   },
   mounted: function () {
@@ -199,8 +226,8 @@ export default {
     this.token = process.env.GITLAB_TOKEN
     if (this.hasLocalStorage) {
       this.url = window.localStorage.getItem('url') || process.env.GITLAB_URL
-      this.token = window.localStorage.getItem('token') || process.env.GITLAB_TOKEN
-      this.rememberMe = Boolean(window.localStorage.getItem('rememberMe') || false)
+      this.token = this.unsafe(window.localStorage.getItem('token') || process.env.GITLAB_TOKEN)
+      this.rememberMe = Boolean(window.localStorage.getItem('rememberMe') || true)
     }
     if (this.url && this.token) {
       this.signin()

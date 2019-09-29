@@ -8,7 +8,7 @@
             <div class="col welcome">
               <div class="pad">
                 <h2>The easy to use, fully functional
-                <br/>Gantt chart for GitLab and GitHub.</h2>
+                <br/>Gantt chart for GitLab.</h2>
                 <p>Provide your teams with the right tool to master time and deadlines. Giving back credit to your project status and issues due dates has never been easier!</p>
                 <p v-if="!userName && downloading" class="downloading"><strong><i v-if="downloading" class="fa fa-circle-o-notch fa-spin" aria-hidden="true"></i> Connecting to {{ url }}</strong></p>
                 <p v-if="loginFailed" class="error"><i class="fa fa-exclamation-triangle"></i> Unable to connect to {{ url }}</p>
@@ -16,24 +16,25 @@
             </div>
 
             <div class="col form">
-              <p class="providerchoice"><i class="fa fa-gitlab" v-bind:class="{ selected: isGitLab }" v-on:click="providerName = 'GitLab'"></i><span> or </span><i class="fa fa-github" v-bind:class="{ selected: !isGitLab }" v-on:click="providerName = 'GitHub'"></i></p>
-              <p class="form-input first">
+              <p style="display:none;" class="providerchoice"><i class="fa fa-gitlab" v-bind:class="{ selected: isGitLab }" v-on:click="providerName = 'GitLab'"></i><span> or </span><i class="fa fa-github" v-bind:class="{ selected: !isGitLab }" v-on:click="providerName = 'GitHub'"></i></p>
+              <p style="display:none;" class="form-input first">
                 <input tabindex="1" v-model="url" v-on:keyup.enter="signin" v-bind:disabled="providerName != 'GitLab'" v-bind:class="{ disabled: providerName != 'GitLab' }" autofocus>
               </p>
-              <p class="helper" v-bind:class="{ disabled: providerName != 'GitLab' }">Your GitLab instance URL</p>
+              <p style="display:none;" class="helper" v-bind:class="{ disabled: providerName != 'GitLab' }">Your GitLab instance URL</p>
+
               <p class="form-input">
                 <input tabindex="2" v-model="token" v-on:keyup.enter="signin">
               </p>
-              <p v-if="providerName == 'GitLab'" class="helper">Use your <a v-bind:href="privateTokenLink" target="_blank" title="/profile/account">Private Token</a>, or a <a v-bind:href="personalTokenLink" target="_blank" title="/profile/personal_access_tokens">Personal Access Token</a></p>
+              <p v-if="providerName == 'GitLab'" class="helper">Use your <a v-bind:href="personalTokenLink" target="_blank" href="/profile/personal_access_tokens">Personal Access Token</a></p>
               <p v-else class="helper">Use one of your <a href="https://github.com/settings/tokens" target="_blank" title="https://github.com/settings/tokens">Personal Access Tokens</a></p>
 
-              <p v-if="hasLocalStorage" class="form-input remember"><input tabindex="3" type="checkbox" v-model="rememberMe"> <span>Remember me <i class="fa fa-question-circle-o" aria-hidden="true" title="Don't do that on a public computer!"></i></span> <button tabindex="4" v-on:click="signin">Sign-in &nbsp;&gt;</button></p>
+              <p v-if="hasLocalStorage" class="form-input remember"><input style="display:none;" tabindex="3" type="checkbox" v-model="rememberMe" selected> <span style="display:none;">Remember me <i class="fa fa-question-circle-o" aria-hidden="true" title="Don't do that on a public computer!"></i></span> <button tabindex="4" v-on:click="signin">Login &nbsp;&gt;</button></p>
             </div>
           </div>
 
           <div class="more"></div>
 
-          <div class="row">
+          <div style="display:none;" class="row">
             <div class="col copy">
               <div class="pad">
                 <p><a href="https://www.ganttlab.org" target="_blank">Read more about GanttLab<i class="fa fa-external-link"></i></a></p>
@@ -55,7 +56,14 @@
         <div id="top" class="standardpadding">
           <div v-if="userName">
             <span class="user"><img v-bind:src="userAvatarUrl"> {{ userName }}</span>
-            <span class="server"><transition name="fade"><i v-if="downloading" class="fa fa-circle-o-notch fa-spin downloading" aria-hidden="true"></i></transition> <a v-bind:href="url" target="_blank">{{ url }}</a> <a href="https://gitlab.com/ganttlab/ganttlab-live#how-it-works" target="_blank"><i class="fa fa-question-circle" aria-hidden="true" title="Help"></i></a> <i class="fa fa-times close" aria-hidden="true" v-on:click="logout" title="Close"></i></span>
+            <span class="server">
+              <transition style="display:none;" name="fade">
+                <i style="display:none;" v-if="downloading" class="fa fa-circle-o-notch fa-spin downloading" aria-hidden="true"></i>
+              </transition>
+              <a style="display:none;" v-bind:href="url" target="_blank">{{ url }}</a>
+              <a style="display:none;" href="https://gitlab.com/ganttlab/ganttlab-live#how-it-works" target="_blank"><i class="fa fa-question-circle" aria-hidden="true" title="Help"></i></a>
+              <i class="fa fa-times close" aria-hidden="true" v-on:click="logout" title="Close"></i>
+            </span>
           </div>
         </div>
 

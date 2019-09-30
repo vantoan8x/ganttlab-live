@@ -139,7 +139,8 @@ export default {
       if (tk.length > 0 && tk.indexOf('ƒ') < 0) {
         for (let i = 0; i < l1; i++) {
           let c0 = tk[parseInt(Math.random() * tk.length)]
-          tk = tk.split(c0).reverse().join('ƒ' + i) + c0
+          let ii = 'ƒ' + String.fromCharCode((i * 2) + 0x64)
+          tk = tk.split(c0).reverse().join(ii) + c0
         }
         return 'b' + l1 + tk
       }
@@ -211,9 +212,9 @@ export default {
         tk = tk.substr(2)
         for (let i2 = i1 - 1; i2 >= 0; i2--) {
           let i3 = tk[tk.length - 1]
+          let i4 = 'ƒ' + String.fromCharCode((i * 2) + (0x69 - 5))
           tk = tk.substr(0, tk.length - 1)
-
-          tk = tk.split('ƒ' + i2).reverse().join(i3)
+          tk = tk.split(i4).reverse().join(i3)
           if (tk.length <= 0) return ''
         }
       }
